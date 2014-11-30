@@ -26,8 +26,7 @@ and also the measure of durations of events and the intervals between them".
 For distributed environments working with time means headache because of clock synchronization, events ordering etc.
 Fortunately blockchain-based networks make some problems easier.  Due to this our model could be even easier: we assume all clocks
 in the system are synchronized! Fortunately, we will lose not too much in modelling quality because of that. Later we can introduce
-local clocks. The analysis of problems of time in distributed systems was first considered in Lamport's article from 1978 ["Time, Clocks, and the
-Ordering of Events in a Distributed System"](http://research.microsoft.com/en-us/um/people/lamport/pubs/time-clocks.pdf).
+local clocks. The problems of time in distributed systems was first considered in Lamport's article from [1978](http://research.microsoft.com/en-us/um/people/lamport/pubs/time-clocks.pdf).
 
 Time in our approach is just a number of seconds from genesis block, so our first entity definition is pretty simple:
 
