@@ -86,15 +86,15 @@ For the genesis block generationSignature is set to some predefined value e.g. f
 Target & Hit Verifying
 ----------------------
 
-To generate `target` value for our rock-paper-scissors game we use last block again. More preciously,
-we multiply its `baseTarget` field value by generator stake(i.e. effective balance) and elapsed time
-since last block generation timestamp(in seconds). Then calculated `target` is being used in `verifyHit` function having
+To generate the `target` value for our rock-paper-scissors game we use last block again. More precisely,
+we multiply its `baseTarget` field value by generator stake (i.e. effective balance) and the elapsed time
+since last block generation timestamp (in seconds). Then the calculated `target` is being used in the `verifyHit` function which has
 two use cases:
 
 * Honest forging account decides whether it has a right to forge a block by calling the function.
-Checking is to be done each second(and each second `target` increases along with a chance to generate a block by
+Checking is to be done each second (and each second `target` increases along with a chance to generate a block by
 satisfying `hit < target` condition).
-* Other parties ensure incoming block is forged by a proper account have a right to do it
+* Other parties ensure the incoming block is forged by a proper account with the right to do it
 
     verifyHit :: Integer -> Block -> Timestamp -> Integer -> Bool
     verifyHit hit prevBlock timestamp effBalance =  (hit < target) && (eta > 0)
@@ -110,8 +110,8 @@ BaseTarget & Block Constructing Function
 
 Now it's time to define `baseTarget :: Integer` field of a block used as an initial value for a forger to generate
 its own `target` in previous section.
-As well as `generationSignature`, `baseTarget` is also depends on a previous block's field value
-with some predefined constant for genesis block. In case of Nxt the base target value for the genesis block is:
+As well as `generationSignature`, `baseTarget` also depends on a previous block's field value
+with some predefined constant for genesis block. In the case of Nxt the base target value for the genesis block is:
 
     initialBaseTarget :: Integer
     initialBaseTarget = 153722867
@@ -141,7 +141,7 @@ generator account, block generation timestamp and transactions to be included:
 Difficulty
 ----------------------
 
-Within blocktree canonical blockchain is the path having max value e.g. height. We will use sum of `baseTarget`
+Within blocktree the canonical blockchain is the path having the max value e.g. height. We will use sum of `baseTarget`
  to select canonical blockchain from possible options and call this function `cumulativeDifficulty`:
 
     cumulativeDifficulty :: BlockChain -> Integer
@@ -155,7 +155,7 @@ There's a lot of buzz about transparent forging these days. The transparent forg
 a next block is to be known for all online network members in prior. It's possible because the algo is deterministic
 but in practice there are some issues to be resolved:
 
-* A forger could miss its turn(there are some workarounds to make block generation quicker for a next forger though)
+* A forger could miss its turn (there are some workarounds to make block generation quicker for a next forger though)
 * List of forging accounts for the whole network is needed. And it's not possible to have it consistent constantly.
 * Even in case of pretty weak consistency it could be a tricky task to implement gossiping about forgers in privacy-friendly
 way.
