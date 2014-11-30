@@ -40,31 +40,31 @@ Why does that matter in the context of the article?
 A Chance to Be Richer
 ----------------------
 
-The goal of forging algo is to choose accounts(the only one in best case) having right to generate a block.
-Obviously, an algo should be:
+The goal of the forging algorithm is to choose the accounts which have the right to generate a block (only one account in the best case).
+
+Obviously, an algorithm should be:
 
 * verifiable
-* deterministic (or it will be not verifiable in cryptocurrency environment)
+* deterministic (or it will be not verifiable in a cryptocurrency environment)
 
 
 Target and Hit
 ---------------
 
-Forging algo reminds distributed implementation of rock-paper-scissors game. Every account willing and having
-ability to forge generates pseudo-random value being called `hit` every second.
-If it's less than stake-dependent `target`value, a node the account is running against is going to generate a block.
-Other parties are preventing cheat by checking both values against incoming block, as `hit` and `target` are both
+A forging algorithm is reminiscent of a rock-paper-scissors game. Every account willing and able to forge generates a pseudo-random value called `hit` every second.
+If it's less than the stake-dependent `target`value, a node the account is running against is going to generate a block.
+Other parties prevent cheating by checking both values against the incoming block, as `hit` and `target` are both
 deterministic.
 
 
 Hit
 ---
 
-Our first goal is to produce deterministic account-dependent `hit` value with fair distribution.
-Do you remember `generationSignature :: ByteString` field in Block structure? There are two purposes to have it:
+Our first goal is to produce a deterministic `hit` value with fair distribution, which depends on the account.
+Do you remember `generationSignature :: ByteString` field in the Block structure? There are two purposes for it:
 
 1. To link a block with a previous one.
-2. It's also being using to generate `hit`
+2. It is also being using to generate `hit`
 
 The formula for `generationSignature` is pretty simple: it's the hash from `generationSignature` of previous block
 attached with generator's public key. Following code calculates it using previous block and candidate account:
@@ -81,29 +81,30 @@ Then `hit` is just a number constructed from first 8 bytes of generation signatu
     calculateHit prevBlock account =  fromIntegral $ runGet getWord64le first8
         where first8 = take 8 (calcGenerationSignature prevBlock account)
 
-For genesis block generationSignature is set to some predefined value e.g. filled with zeros.
+For the genesis block generationSignature is set to some predefined value e.g. filled with zeros.
 
 
 Target & Hit Verifying
 ----------------------
 
-To generate `target` value for our rock-paper-scissors game we use last block again. More preciously,
-we multiply its `baseTarget` field value by generator stake(i.e. effective balance) and elapsed time
-since last block generation timestamp(in seconds). Then calculated `target` is being used in `verifyHit` function having
+To generate the `target` value for our rock-paper-scissors game we use the last block again. More precisely,
+we multiply its `baseTarget` field value by the generator stake (i.e. effective balance) and the elapsed time
+since last block generation timestamp (in seconds). 
+
+Then the calculated `target` is being used in the `verifyHit` function which has
 two use cases:
 
 * Honest forging account decides whether it has a right to forge a block by calling the function.
-Checking is to be done each second(and each second `target` increases along with a chance to generate a block by
+Checking is to be done each second (and each second `target` increases along with a chance to generate a block by
 satisfying `hit < target` condition).
-* Other parties ensure incoming block is forged by a proper account have a right to do it
-
+* Other parties ensure the incoming block is forged by a proper account with the right to do it
 
     verifyHit :: Integer -> Block -> Timestamp -> Integer -> Bool
     verifyHit hit prevBlock timestamp effBalance =  (hit < target) && (eta > 0)
         where eta = timestamp - blockTimestamp prevBlock
               target = effBalance*(baseTarget prevBlock)*eta
 
-Again, if a result of function call is true, a generator is going to form a block and push it to the network.
+Again, if a result of the function call is true, a generator is going to form a block and push it to the network.
 Other nodes can check whether block is generated properly by calling the same function.
 
 
@@ -112,8 +113,8 @@ BaseTarget & Block Constructing Function
 
 Now it's time to define `baseTarget :: Integer` field of a block used as an initial value for a forger to generate
 its own `target` in previous section.
-As well as `generationSignature`, `baseTarget` is also depends on a previous block's field value
-with some predefined constant for genesis block. In case of Nxt the base target value for the genesis block is:
+As well as `generationSignature`, `baseTarget` also depends on a previous block's field value
+with some predefined constant for genesis block. In the case of Nxt the base target value for the genesis block is:
 
     initialBaseTarget :: Integer
     initialBaseTarget = 153722867
@@ -143,7 +144,7 @@ generator account, block generation timestamp and transactions to be included:
 Difficulty
 ----------------------
 
-Within blocktree canonical blockchain is the path having max value e.g. height. We will use sum of `baseTarget`
+Within blocktree the canonical blockchain is the path having the max value e.g. height. We will use sum of `baseTarget`
  to select canonical blockchain from possible options and call this function `cumulativeDifficulty`:
 
     cumulativeDifficulty :: BlockChain -> Integer
@@ -157,7 +158,7 @@ There's a lot of buzz about transparent forging these days. The transparent forg
 a next block is to be known for all online network members in prior. It's possible because the algo is deterministic
 but in practice there are some issues to be resolved:
 
-* A forger could miss its turn(there are some workarounds to make block generation quicker for a next forger though)
+* A forger could miss its turn (there are some workarounds to make block generation quicker for a next forger though)
 * List of forging accounts for the whole network is needed. And it's not possible to have it consistent constantly.
 * Even in case of pretty weak consistency it could be a tricky task to implement gossiping about forgers in privacy-friendly
 way.
