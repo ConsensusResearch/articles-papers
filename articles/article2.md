@@ -50,21 +50,20 @@ Obviously, an algo should be:
 Target and Hit
 ---------------
 
-Forging algo reminds distributed implementation of rock-paper-scissors game. Every account willing and having
-ability to forge generates pseudo-random value being called `hit` every second.
-If it's less than stake-dependent `target`value, a node the account is running against is going to generate a block.
-Other parties are preventing cheat by checking both values against incoming block, as `hit` and `target` are both
+A forging algorithm is reminiscent of a rock-paper-scissors game. Every account willing and able to forge generates a pseudo-random value called `hit` every second.
+If it's less than the stake-dependent `target`value, a node the account is running against is going to generate a block.
+Other parties prevent cheating by checking both values against the incoming block, as `hit` and `target` are both
 deterministic.
 
 
 Hit
 ---
 
-Our first goal is to produce deterministic account-dependent `hit` value with fair distribution.
-Do you remember `generationSignature :: ByteString` field in Block structure? There are two purposes to have it:
+Our first goal is to produce a deterministic account-dependent `hit` value with fair distribution.
+Do you remember `generationSignature :: ByteString` field in Block structure? There are two purposes for it:
 
 1. To link a block with a previous one.
-2. It's also being using to generate `hit`
+2. It is also being using to generate `hit`
 
 The formula for `generationSignature` is pretty simple: it's the hash from `generationSignature` of previous block
 attached with generator's public key. Following code calculates it using previous block and candidate account:
@@ -81,7 +80,7 @@ Then `hit` is just a number constructed from first 8 bytes of generation signatu
     calculateHit prevBlock account =  fromIntegral $ runGet getWord64le first8
         where first8 = take 8 (calcGenerationSignature prevBlock account)
 
-For genesis block generationSignature is set to some predefined value e.g. filled with zeros.
+For the genesis block generationSignature is set to some predefined value e.g. filled with zeros.
 
 
 Target & Hit Verifying
@@ -96,7 +95,6 @@ two use cases:
 Checking is to be done each second(and each second `target` increases along with a chance to generate a block by
 satisfying `hit < target` condition).
 * Other parties ensure incoming block is forged by a proper account have a right to do it
-
 
     verifyHit :: Integer -> Block -> Timestamp -> Integer -> Bool
     verifyHit hit prevBlock timestamp effBalance =  (hit < target) && (eta > 0)
