@@ -4,10 +4,10 @@ Inside a Proof-of-Stake Cryptocurrency part 1: Basic Structures
 Introduction
 ------------
 
-Pure and hybrid Proof-of-Stake cryptocurrencies are on the rise today. The most known pure PoS example, Nxt, has tens of forks
+Pure and hybrid Proof-of-Stake cryptocurrencies are on the rise today. The most known pure PoS example, Nxt, has tens of clones
 at the moment (some of them are quite promising), the Ethereum team thinks about hybrid (PoS/PoW) mining principle, and so on.
-At the same time, there are many concerns about the concept, not formalized well enough, unfortunately, for example for example even
-the famous "nothing-at-stake" attack has not a good description. The sad thing is both good and bad things about proof-of-stake
+At the same time, there are many concerns about the concept which are not formalized well enough, unfortunately. For example even
+the famous "nothing-at-stake" attack has not a good description. The sad thing is both good and bad aspects about proof-of-stake
 have no good formal description and model behind. The challenge of this series is to make some progress in this area.
 
 
@@ -16,7 +16,7 @@ Prerequisites
 
 I assume you know some common things about Bitcoin and proof-of-work mining. It's better to have basic coding skills
  to understand code snippets. Haskell programming language is being using for them (though Haskell knowledge isn't required).
-We will start with model as simple as possible. I prefer to make a simplest thing harder than to work with complicated case from day one.
+We will start with model as simple as possible. I prefer to make a simple thing harder than to work with complicated case from day one.
 
 Time
 ----
@@ -26,7 +26,8 @@ and also the measure of durations of events and the intervals between them".
 For distributed environments working with time means headache because of clock synchronization, events ordering etc.
 Fortunately blockchain-based networks make some problems easier.  Due to this our model could be even easier: we assume all clocks
 in the system are synchronized! Fortunately, we will lose not too much in modelling quality because of that. Later we can introduce
-local clocks.
+local clocks. The analysis of problems of time in distributed systems was first considered in Lamport's article "Time, Clocks, and the
+Ordering of Events in a Distributed System".
 
 Time in our approach is just a number of seconds from genesis block, so our first entity definition is pretty simple:
 
