@@ -40,11 +40,12 @@ Why does that matter in the context of the article?
 A Chance to Be Richer
 ----------------------
 
-The goal of forging algo is to choose accounts(the only one in best case) having right to generate a block.
-Obviously, an algo should be:
+The goal of the forging algorithm is to choose the accounts which have the right to generate a block (only one account in the best case).
+
+Obviously, an algorithm should be:
 
 * verifiable
-* deterministic (or it will be not verifiable in cryptocurrency environment)
+* deterministic (or it will be not verifiable in a cryptocurrency environment)
 
 
 Target and Hit
@@ -59,8 +60,8 @@ deterministic.
 Hit
 ---
 
-Our first goal is to produce a deterministic account-dependent `hit` value with fair distribution.
-Do you remember `generationSignature :: ByteString` field in Block structure? There are two purposes for it:
+Our first goal is to produce a deterministic `hit` value with fair distribution, which depends on the account.
+Do you remember `generationSignature :: ByteString` field in the Block structure? There are two purposes for it:
 
 1. To link a block with a previous one.
 2. It is also being using to generate `hit`
@@ -86,9 +87,11 @@ For the genesis block generationSignature is set to some predefined value e.g. f
 Target & Hit Verifying
 ----------------------
 
-To generate the `target` value for our rock-paper-scissors game we use last block again. More precisely,
-we multiply its `baseTarget` field value by generator stake (i.e. effective balance) and the elapsed time
-since last block generation timestamp (in seconds). Then the calculated `target` is being used in the `verifyHit` function which has
+To generate the `target` value for our rock-paper-scissors game we use the last block again. More precisely,
+we multiply its `baseTarget` field value by the generator stake (i.e. effective balance) and the elapsed time
+since last block generation timestamp (in seconds). 
+
+Then the calculated `target` is being used in the `verifyHit` function which has
 two use cases:
 
 * Honest forging account decides whether it has a right to forge a block by calling the function.
@@ -101,7 +104,7 @@ satisfying `hit < target` condition).
         where eta = timestamp - blockTimestamp prevBlock
               target = effBalance*(baseTarget prevBlock)*eta
 
-Again, if a result of function call is true, a generator is going to form a block and push it to the network.
+Again, if a result of the function call is true, a generator is going to form a block and push it to the network.
 Other nodes can check whether block is generated properly by calling the same function.
 
 
