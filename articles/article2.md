@@ -143,11 +143,11 @@ generator account, block generation timestamp and transactions to be included:
 Difficulty
 ----------------------
 
-Within blocktree canonical blockchain is the path having max value e.g. height. We will use sum of `baseTarget`
+Within blocktree canonical blockchain is the path having max value e.g. height. We will use sum of 1/`baseTarget`
  to select canonical blockchain from possible options and call this function `cumulativeDifficulty`:
 
-    cumulativeDifficulty :: BlockChain -> Integer
-    cumulativeDifficulty BlockChain {blocks=bs} = sum(map baseTarget bs)
+    cumulativeDifficulty :: BlockChain -> Double
+    cumulativeDifficulty chain = sum(map (\bl -> 1 / (fromIntegral $ baseTarget bl) ) chain)
 
 
 Transparent Forging
