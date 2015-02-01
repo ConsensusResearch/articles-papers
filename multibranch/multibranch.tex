@@ -17,7 +17,7 @@
 \maketitle
 \begin{abstract}
 In this paper we present the concept of provable code usage for formally described and reliable crypto-currencies systems development. 
-Capabilities of this approach are presented on a model of multibranch forging algorithm in the Proof-of-Stake networks. 
+As a demonstration of this approach, a model of a multibranch forging algorithm in a Proof-of-Stake network is presented. 
 The results of simulation show the potential power of multibranch forging as well as a potential tendency towards the 
 Proof-of-Work networks which should be avoided. The latter opens new areas of research. Our concept of the multibranch forging can be interpreted 
 as a formally stated reference implementation for the broadly discussed Transparent Forging model. Examples of functional code are also presented to 
@@ -28,27 +28,30 @@ demonstrate our approach and its properties.
 {\bf Keywords:} PoS crypto-currencies, forging, blocktree, simulation
 
 \section{Pre-introduction}
-We continue the series of papers on various aspects of Proof-of-Stake forging algorithms. Now we act as the Consensus Research 
+We continue the series of papers on various aspects of Proof-of-Stake forging algorithms. We act as the Consensus Research 
 Group \url{http://consensusresearch.org} and publish our updates both on the website and the Nxt forum \url{https://nxtforum.org/consensus-research/}.
-Our strategy in papers issuing is based on the principle to concentrate one paper on one result, so we plan to update our status with one more paper 
-max bi-weekly, describing what we will have achieved. For the papers that need corrections or important changes we will update in the usual way,
+We plan to concentrate on one result in each paper and update our status with at least one new paper or software upload every two weeks describing 
+what we will have achieved. For the papers that need corrections or important changes we will update in the usual way,
 issuing the next versions. 
 
 \section{Introduction or Time for definitions}
 The world of crypto-currencies (CC) is one of the most innovative and progressive field both for research 
-and software development in financial sphere based on liberty and independence. However new areas sometimes suffer from the unproved methods and speculations around. To bring a new branch of discussions based on verifiable statements we offer the community to summarize what we already know and give the more or less formal 
+and software development in financial sphere based on liberty and independence. However new areas sometimes suffer from unproved methods and speculations.  
+To bring a new branch of discussions based on verifiable statements we offer the community to summarize what we already know and give the more or less formal 
 definitions to broad used terms. We realize that the definitions always restrict something but from the opposite side they bring a common knowledge and let people 
 to use the same terms meaning the same things. The most powerful way to give definitions is using mathematical models of what we investigate and introduce the 
-terms as strict math formulations and the statements as theorems. This approach lets to go further with understanding and to create on the top rather than falling to 
-the basic terms trying to realize what it could denoted. 
+terms as strict math formulations and the statements as theorems. The approach of building on formal mathematical definitions allows
+for a much deeper understanding and give a common ground for discussions. Unless the definitions of the basic terms are made clear and explicit,
+disagreeements in discussions are often based on misunderstandings.
 
-Important thing is that CC is already a kind of industry and the community waits not just a {\it theory}
-but an executable software which brings the demanded properties. We are lucky that actually we have already developed tools to do it at the same time. One
-of the approach is using of proof assistant systems which let developers to proof the statements and get the executable code as a final result. However
-these systems still restrict the development process in particular forcing to use the functional representations of a code and inductively defined datatypes with
-strictly decreasing recursion which maybe are not broadly acceptable by programmers. Our goal here is to create a reference implementations of some algorithms
-which could be interesting for research and translating them to more acceptable code forms. Another way is to use them for core of a system to be developed or
-its most critical parts. So summarizing, our principle of development is as follows:
+It is important to note is that CC is already an industry. The community surrounding CC awaits not just a theory but an executable software which brings 
+the required properties. We are lucky that actually we have already developed tools to do both at the same time. One
+of the approach is the use of proof assistant systems which let developers to proof the statements and get the executable code as a final result. However these 
+systems sometimes restrict the development process. In particular programmers are often forced to use functional representations of code and inductively 
+defined datatypes with strictly decreasing recursion (statically ensuring termination). Such restrictions are not broadly accepted by programmers. 
+Our goal here is to create reference implementations of some algorithms which could be interesting for research and translating them to more acceptable 
+forms of code. Another way is to use proof assistants to develop the core of a system or its most critical parts. 
+So summarizing, our principle of development is as follows:
 $$
 {\rm Principles\ of\ the\ system}\to{\rm Definitions\ \&\ strict\ specification}\to
 $$
@@ -57,28 +60,28 @@ $$
 $$  
 
 This paper is to show the main result concerning the multibranch forging as well as to demonstrate our way of development. The proof assistant system we use is 
-Coq \url{https://coq.inria.fr/} and the reference language is Haskell \url{https://www.haskell.org/haskellwiki/Haskell} so we use both languages notations for convenience. We suggest that a reader is familiar with functional 
-notations however the results of the paper can be realized without this knowledge. We also suggest that a reader is familiar with basics of crypto-currencies
-technology so we describe only the concepts important for this paper.
+Coq \url{https://coq.inria.fr/} and the reference language is Haskell \url{https://www.haskell.org/haskellwiki/Haskell} so we use both languages notations 
+for convenience. We sassume that a reader is familiar with functional notations however the results of the paper can be understood without this knowledge. 
+We also assume that a reader is familiar with basics of crypto-currencies technology so we describe only the concepts important for this paper.
 
 \section{PoX forging and blocktrees}
-The most of existing CCs use one of the following principles to build a blockchain \-- Proof-of-Work or Proof-of-X, where X is not Work, 
+Most existing CCs use one of the following principles to build a blockchain \-- Proof-of-Work or Proof-of-X, where X is not Work, 
 and there are also hybrid 
 systems using both of them. The main difference between these principles is that in PoW systems the right to generate block arises 
 when a certain calculations (work) are made and in PoX systems the right arises based on logical and/or directly measurable parameters of the generating account. 
 
 One of the most popular principles is the PoS 
 (Proof-of-Stake) system where the right to generate a block arises from a certain amount of stake (portion of coins) which 
-an account accumulates and some predefined mechanism for blocks generating and accepting. The question we begin to investigate here is a 
+an account accumulates and some predefined mechanism for generating and accepting blocks. The question we begin to investigate here is a 
 general possibility and modeling results of PoS forging in a special environment. Almost all the CC systems use the so called blockchain as a 
-main dynamic structure to store the network specific data. Blockchain is a sequence of blocks used with the following purposes: (1) each block contains the 
+main dynamic structure to store the network specific data. A blockchain is a sequence of blocks used with the following purposes: (1) each block contains the 
 accumulated network specific information such as transactions and other valuable data which have to be shared between the peers 
 (2) blocks are connected in the cause and effect principle. So the later block cannot exist without
 the previous: $\forall a_1,a_2\in A, (a_1\Rightarrow a_2) \to (a_1\in B_1) \to (a_2\in B_2) \to B_1 \prec B_2$. We denote with $A$ a set of possible actions or 
 events stored in the block and denote with $a_1\Rightarrow a_2$ the fact that an event $a_2$ is dependent (or cannot be occur without) an event $a_1$. 
 The sequencing of the
 blocks we denote as $B_1 \prec B_2$ meaning strict following of the $B_2$ after $B_1$ in the blockchain. The latter proposition we can write with a weak form of
-$B_1 \preceq B_2$ but we should beware of asynchronous way of actions processing and then we use better strict form to avoid postponing of events processing. 
+$B_1 \preceq B_2$ but to avoid postponing processing events (due to the asynchronous way actions are processed) it is better to use the strict form.
 It should be noted
 that actions are not ordered based on the time of creation, the only thing we need is the causing conditions and the fact that every action 
 will be put in a blockchain within a certain time interval. 
@@ -91,39 +94,41 @@ to create a network consensus \--
 roughly speaking, an account (or node) who decided to build a block in other place should be more powerful or lucky 
 than all the nodes who decided to build a "right-placed" block and therefore
 the winning strategy is most probable to act as others. 
-The latter could be called "consensus in acting" when doing the same things will benefit sides in getting 
-the result. The weaker form of consensus can be called "consensus in vision" when we get the same result doing theoretically different things or even more weak \--
-the peers can potentially have different network data ("the intermediate result") which is nevertheless equally interpreted.
+The latter could be called "consensus in acting" when doing the same things will benefit all parties in getting 
+the result. The weaker form of consensus can be called "consensus in vision" when we get the same result (e.g. accounts' balances) 
+doing theoretically different things (e.g. forging to different branches, but keeping the whole tree). The weakest form of consensus could be observed when 
+peers have {\it different} internal data ("the intermediate result") which is nevertheless equally (or equivalently) interpreted.
  
 Note that in the PoS systems we cannot force the nodes to do the same things at all because they don't lose anything (like computing power in PoW) doing 
 different things at the same moment, for example forging to different branches of the blockchain. And the question is \-- could we in principle achieve a rational
 consensus at its weak form in the pure PoS system? At the moment we are a few steps before we can give a strict definition to the consensus itself and its form. 
-And thus we let us to be inspired from the simulation of multibranch forging in PoS systems as a way to present forking future process. 
-To do this we introduce a blocktree \-- a tree-like structure of blocks without 
-forcing it to be a list (a chain) as its best. Blocktree is a data which each node can locally store and exchange with others like with the blockchain. 
+And thus we allow ourselves to be inspired from the simulation of multibranch forging in PoS systems as a way to demonstrate a process of the natural 
+blockchain forking. To do this we introduce a blocktree \-- a tree-like structure of blocks without 
+forcing it to be a list (a chain) as its best. A blocktree is data which each node can locally store and exchange with others like with the blockchain. 
 The only thing we need from this tree is to have a possibility to create the present vision of reality or just choose the one. 
 The consensus for such a network means that nodes benefit from choosing the same vision. The cause
-and effect proposition surely should be held for a tree as well as for a chain. 
+and effect principle surely should be held for a tree as well as for a chain. 
 
 We continue our general constructions in future works and start describing the concrete system from this point.
 
 \section{Blocktree forging and Transparency}
-The main idea of the Transparent Forging is that accounts can choose between generating a block or skipping 
+The main idea of Transparent Forging is that accounts can choose between generating a block or skipping 
 their turn to all-the-network benefits. 
 It is possible because in some circumstances the future forgers are more or less known and possible future is predictable. So looking to the future block generation
 process an account can choose its strategy based on its belief. However not going deeper into implementation of exactly this idea and living in the 
-transparent environment let's switch the rule to "If you can generate - do it and tell others, but you may keep several versions of a future". Easy to see
+transparent environment let's switch the rule to "If you can generate - do it and tell others, but you may keep several versions of a future". It is easy to see
 that is almost the same principle \-- if an account can generate a block at the given time it anyway generates it but the outgoing block 
-can be interpreted as only one of possible outcome from the previous. Other accounts still have a right to forge to the previous block and generate a new block later (but maybe "better"), and they also will tell the 
+can be interpreted as only one of possible outcome from the previous. Other accounts still have a right to forge to the previous block and generate a 
+new block later (but maybe "better"), and they also will tell the 
 network about their efforts. So we change the rule "predict and decide" to the rule "act and choose later". This is possible because predicting here means the
 same as acting for all forging accounts, so if all accounts act \-- they all predict. 
 
 We realize a little difference between the original "generate/skip" and multibranch strategies but 
 we think it is not principal. We do not discuss the security here \-- we think the security lies beyond the forging algorithms (we'll discuss it in separate 
 paper). So our blocktree forging is a kind of Transparent Forging implementation with shifted aspects. We offer not to decide which future is better for the 
-network (or account) now \-- we offer to keep them all and choose later. This gives us an independence on our prediction 
-quality and lets not get in stuck with wrong predictions. 
-So we give the formal description of our model below and it can be also interpreted as a formal description of TF in our vision.
+network (or account) now \-- we offer to keep them all and choose later. This approach gives the peers an independence on prediction 
+quality and allows not to suffer from the wrong predictions. So we give the formal description of our model below and it can be also 
+interpreted as a formal description of TF in our vision.
 
 \section{Blocktree structures and forging}
 We use the Nxt forging algorithm as a reference one and change only the block storing structure. To be compatible with the list (chain) we define our blocktree as a 
