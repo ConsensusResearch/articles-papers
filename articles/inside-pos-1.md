@@ -6,7 +6,7 @@ Introduction
 
 Pure and hybrid Proof-of-Stake cryptocurrencies are on the rise today. The most known pure PoS example, Nxt, has tens of forks
 at the moment (some of them are quite promising), the Ethereum team thinks about hybrid (PoS/PoW) mining principle, and so on.
-At the same time, there are many concerns about the concept, not formalized well enough, unfortunately, for example for example even
+At the same time, there are many concerns about the concept, not formalized well enough, unfortunately, for example even
 the famous "nothing-at-stake" attack has not a good description. The sad thing is both good and bad things about proof-of-stake
 have no good formal description and model behind. The challenge of this series is to make some progress in this area.
 
